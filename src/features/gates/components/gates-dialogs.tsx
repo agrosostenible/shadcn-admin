@@ -1,21 +1,21 @@
-import { UsersActionDialog } from './users-action-dialog'
-import { UsersDeleteDialog } from './users-delete-dialog'
-import { useUsers } from './users-provider'
+import { GatesActionDialog } from './gates-action-dialog'
+import { GatesDeleteDialog } from './gates-delete-dialog'
+import { useGates } from './gates-provider'
 
-export function UsersDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useUsers()
+export function GatesDialogs() {
+  const { open, setOpen, currentRow, setCurrentRow } = useGates()
   return (
     <>
-      <UsersActionDialog
-        key='user-add'
+      <GatesActionDialog
+        key='gate-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
       />
 
       {currentRow && (
         <>
-          <UsersActionDialog
-            key={`user-edit-${currentRow.id}`}
+          <GatesActionDialog
+            key={`gate-edit-${currentRow.id}`}
             open={open === 'edit'}
             onOpenChange={() => {
               setOpen('edit')
@@ -26,8 +26,8 @@ export function UsersDialogs() {
             currentRow={currentRow}
           />
 
-          <UsersDeleteDialog
-            key={`user-delete-${currentRow.id}`}
+          <GatesDeleteDialog
+            key={`gate-delete-${currentRow.id}`}
             open={open === 'delete'}
             onOpenChange={() => {
               setOpen('delete')

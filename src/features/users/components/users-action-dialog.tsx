@@ -3,7 +3,6 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,27 +23,31 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { roles } from '../data/data'
 import { type User } from '../data/schema'
+import { useUsersData } from '../hooks/use-users-data'
+import { useRoles } from '@/hooks/use-roles'
 
 const formSchema = z
   .object({
-    firstName: z.string().min(1, 'First Name is required.'),
-    lastName: z.string().min(1, 'Last Name is required.'),
-    username: z.string().min(1, 'Username is required.'),
-    phoneNumber: z.string().min(1, 'Phone number is required.'),
-    email: z.email({
-      error: (iss) => (iss.input === '' ? 'Email is required.' : undefined),
-    }),
-    password: z.string().transform((pwd) => pwd.trim()),
-    role: z.string().min(1, 'Role is required.'),
-    confirmPassword: z.string().transform((pwd) => pwd.trim()),
+    device_id: z.string().min(1, 'Device ID is required.'),
+    mac_address: z
+      .string()
+      .regex(
+        /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/,
+        'Invalid MAC address format. Use XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX'
+      ),
+    telegram_id: z.coerce.number().positive('Telegram ID must be a positive number.'),
+    alias: z.string().optional(),
+    credits: z.coerce.number().min(0, 'Credits cannot be negative.').optional(),
+    password: z.string().optional().transform((pwd) => pwd?.trim() || undefined),
+    confirmPassword: z.string().optional().transform((pwd) => pwd?.trim() || undefined),
+    role_name: z.enum(['user', 'admin']).optional(),
     isEdit: z.boolean(),
   })
   .refine(
     (data) => {
       if (data.isEdit && !data.password) return true
-      return data.password.length > 0
+      return data.password && data.password.length > 0
     },
     {
       message: 'Password is required.',
@@ -54,30 +57,10 @@ const formSchema = z
   .refine(
     ({ isEdit, password }) => {
       if (isEdit && !password) return true
-      return password.length >= 8
+      return password && password.length >= 6
     },
     {
-      message: 'Password must be at least 8 characters long.',
-      path: ['password'],
-    }
-  )
-  .refine(
-    ({ isEdit, password }) => {
-      if (isEdit && !password) return true
-      return /[a-z]/.test(password)
-    },
-    {
-      message: 'Password must contain at least one lowercase letter.',
-      path: ['password'],
-    }
-  )
-  .refine(
-    ({ isEdit, password }) => {
-      if (isEdit && !password) return true
-      return /\d/.test(password)
-    },
-    {
-      message: 'Password must contain at least one number.',
+      message: 'Password must be at least 6 characters long.',
       path: ['password'],
     }
   )
@@ -105,32 +88,71 @@ export function UsersActionDialog({
   onOpenChange,
 }: UserActionDialogProps) {
   const isEdit = !!currentRow
+  const { createUser, updateUser, isCreating, isUpdating } = useUsersData()
+  const { roles } = useRoles()
+
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? {
-          ...currentRow,
+          device_id: currentRow.device_id,
+          mac_address: currentRow.mac_address,
+          telegram_id: currentRow.telegram_id,
+          alias: currentRow.alias || '',
+          credits: currentRow.credits,
           password: '',
           confirmPassword: '',
+          role_name: currentRow.role.name,
           isEdit,
         }
       : {
-          firstName: '',
-          lastName: '',
-          username: '',
-          email: '',
-          role: '',
-          phoneNumber: '',
+          device_id: '',
+          mac_address: '',
+          telegram_id: 0,
+          alias: '',
+          credits: 0,
           password: '',
           confirmPassword: '',
+          role_name: 'user',
           isEdit,
         },
   })
 
   const onSubmit = (values: UserForm) => {
-    form.reset()
-    showSubmittedData(values)
-    onOpenChange(false)
+    const { confirmPassword, isEdit: _, ...data } = values
+
+    if (isEdit && currentRow) {
+      const updateData: any = {}
+      if (data.device_id !== currentRow.device_id) updateData.device_id = data.device_id
+      if (data.mac_address !== currentRow.mac_address) updateData.mac_address = data.mac_address
+      if (data.telegram_id !== currentRow.telegram_id) updateData.telegram_id = data.telegram_id
+      if (data.alias !== currentRow.alias) updateData.alias = data.alias || null
+      if (data.credits !== currentRow.credits) updateData.credits = data.credits
+      if (data.password) updateData.password = data.password
+      if (data.role_name !== currentRow.role.name) updateData.role_name = data.role_name
+
+      updateUser({ userId: currentRow.id, userData: updateData }, {
+        onSuccess: () => {
+          form.reset()
+          onOpenChange(false)
+        },
+      })
+    } else {
+      const createData: any = {
+        device_id: data.device_id,
+        mac_address: data.mac_address,
+        telegram_id: data.telegram_id,
+      }
+      if (data.alias) createData.alias = data.alias
+      if (data.password) createData.password = data.password
+
+      createUser(createData, {
+        onSuccess: () => {
+          form.reset()
+          onOpenChange(false)
+        },
+      })
+    }
   }
 
   const isPasswordTouched = !!form.formState.dirtyFields.password
@@ -160,15 +182,15 @@ export function UsersActionDialog({
             >
               <FormField
                 control={form.control}
-                name='firstName'
+                name='device_id'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      First Name
+                      Device ID
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='John'
+                        placeholder='device-12345'
                         className='col-span-4'
                         autoComplete='off'
                         {...field}
@@ -180,16 +202,16 @@ export function UsersActionDialog({
               />
               <FormField
                 control={form.control}
-                name='lastName'
+                name='mac_address'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Last Name
+                      MAC Address
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Doe'
-                        className='col-span-4'
+                        placeholder='AA:BB:CC:DD:EE:FF'
+                        className='col-span-4 font-mono'
                         autoComplete='off'
                         {...field}
                       />
@@ -200,16 +222,17 @@ export function UsersActionDialog({
               />
               <FormField
                 control={form.control}
-                name='username'
+                name='telegram_id'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Username
+                      Telegram ID
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='john_doe'
-                        className='col-span-4'
+                        type='number'
+                        placeholder='123456789'
+                        className='col-span-4 font-mono'
                         {...field}
                       />
                     </FormControl>
@@ -219,33 +242,17 @@ export function UsersActionDialog({
               />
               <FormField
                 control={form.control}
-                name='email'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='john.doe@gmail.com'
-                        className='col-span-4'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='phoneNumber'
+                name='alias'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Phone Number
+                      Alias
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='+123456789'
+                        placeholder='Optional nickname'
                         className='col-span-4'
+                        autoComplete='off'
                         {...field}
                       />
                     </FormControl>
@@ -253,37 +260,61 @@ export function UsersActionDialog({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='role'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Role</FormLabel>
-                    <SelectDropdown
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                      placeholder='Select a role'
-                      className='col-span-4'
-                      items={roles.map(({ label, value }) => ({
-                        label,
-                        value,
-                      }))}
-                    />
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
+              {isEdit && (
+                <FormField
+                  control={form.control}
+                  name='credits'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                      <FormLabel className='col-span-2 text-end'>
+                        Credits
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          placeholder='0'
+                          className='col-span-4'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className='col-span-4 col-start-3' />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {isEdit && (
+                <FormField
+                  control={form.control}
+                  name='role_name'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                      <FormLabel className='col-span-2 text-end'>Role</FormLabel>
+                      <SelectDropdown
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Select a role'
+                        className='col-span-4'
+                        items={roles.map((role) => ({
+                          label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
+                          value: role.name,
+                        }))}
+                      />
+                      <FormMessage className='col-span-4 col-start-3' />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name='password'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Password
+                      Password{isEdit && ' (optional)'}
                     </FormLabel>
                     <FormControl>
                       <PasswordInput
-                        placeholder='e.g., S3cur3P@ssw0rd'
+                        placeholder='Minimum 6 characters'
                         className='col-span-4'
                         {...field}
                       />
@@ -303,7 +334,7 @@ export function UsersActionDialog({
                     <FormControl>
                       <PasswordInput
                         disabled={!isPasswordTouched}
-                        placeholder='e.g., S3cur3P@ssw0rd'
+                        placeholder='Minimum 6 characters'
                         className='col-span-4'
                         {...field}
                       />
@@ -316,8 +347,8 @@ export function UsersActionDialog({
           </Form>
         </div>
         <DialogFooter>
-          <Button type='submit' form='user-form'>
-            Save changes
+          <Button type='submit' form='user-form' disabled={isCreating || isUpdating}>
+            {isCreating || isUpdating ? 'Saving...' : 'Save changes'}
           </Button>
         </DialogFooter>
       </DialogContent>

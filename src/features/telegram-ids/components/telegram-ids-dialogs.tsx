@@ -1,21 +1,21 @@
-import { UsersActionDialog } from './users-action-dialog'
-import { UsersDeleteDialog } from './users-delete-dialog'
-import { useUsers } from './users-provider'
+import { TelegramIDsActionDialog } from './telegram-ids-action-dialog'
+import { TelegramIDsDeleteDialog } from './telegram-ids-delete-dialog'
+import { useTelegramIDs } from './telegram-ids-provider'
 
-export function UsersDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useUsers()
+export function TelegramIDsDialogs() {
+  const { open, setOpen, currentRow, setCurrentRow } = useTelegramIDs()
   return (
     <>
-      <UsersActionDialog
-        key='user-add'
+      <TelegramIDsActionDialog
+        key='telegram-id-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
       />
 
       {currentRow && (
         <>
-          <UsersActionDialog
-            key={`user-edit-${currentRow.id}`}
+          <TelegramIDsActionDialog
+            key={`telegram-id-edit-${currentRow.id}`}
             open={open === 'edit'}
             onOpenChange={() => {
               setOpen('edit')
@@ -26,8 +26,8 @@ export function UsersDialogs() {
             currentRow={currentRow}
           />
 
-          <UsersDeleteDialog
-            key={`user-delete-${currentRow.id}`}
+          <TelegramIDsDeleteDialog
+            key={`telegram-id-delete-${currentRow.id}`}
             open={open === 'delete'}
             onOpenChange={() => {
               setOpen('delete')
