@@ -30,7 +30,7 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
   }
 
   return (
-    <BulkActions table={table}>
+    <BulkActions table={table} entityName='gate'>
       <Button
         variant='outline'
         size='sm'

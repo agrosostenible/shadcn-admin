@@ -114,7 +114,7 @@ export const usersColumns: ColumnDef<User>[] = [
         </div>
       )
     },
-    filterFn: (row, id, value) => {
+    filterFn: (row, _id, value) => {
       return value.includes(row.original.role.name)
     },
     enableSorting: false,

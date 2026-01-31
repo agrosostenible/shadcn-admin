@@ -1,7 +1,7 @@
 'use client'
 
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
+import { type Resolver, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -45,7 +45,7 @@ export function TelegramIDsActionDialog({
     useTelegramIDsData()
 
   const form = useForm<TelegramIDForm>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as Resolver<TelegramIDForm>,
     defaultValues: isEdit
       ? {
           telegram_id: currentRow.telegram_id,

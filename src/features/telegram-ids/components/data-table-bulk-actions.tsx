@@ -32,7 +32,7 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
   }
 
   return (
-    <BulkActions table={table}>
+    <BulkActions table={table} entityName='Telegram ID'>
       <Button
         variant='outline'
         size='sm'

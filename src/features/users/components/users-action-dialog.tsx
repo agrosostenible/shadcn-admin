@@ -1,7 +1,7 @@
 'use client'
 
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
+import { type Resolver, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -92,7 +92,7 @@ export function UsersActionDialog({
   const { roles } = useRoles()
 
   const form = useForm<UserForm>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as Resolver<UserForm>,
     defaultValues: isEdit
       ? {
           device_id: currentRow.device_id,

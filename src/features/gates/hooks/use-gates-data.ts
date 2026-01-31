@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   gatesService,
-  type Gate,
   type CreateGateData,
   type UpdateGateData,
   type SearchGatesParams,

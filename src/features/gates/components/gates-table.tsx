@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { DataTablePagination } from '@/components/data-table'
 import { type Gate } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { gatesColumns as columns } from './gates-columns'

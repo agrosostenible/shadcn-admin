@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   usersService,
-  type User,
   type CreateUserData,
   type UpdateUserData,
   type SearchUsersParams,
