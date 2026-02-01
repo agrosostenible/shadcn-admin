@@ -22,6 +22,7 @@ import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTelegramIdsIndexRouteImport } from './routes/_authenticated/telegram-ids/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedLiveRecordsIndexRouteImport } from './routes/_authenticated/live-records/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedGatesIndexRouteImport } from './routes/_authenticated/gates/index'
 import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
@@ -99,6 +100,12 @@ const AuthenticatedSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedLiveRecordsIndexRoute =
+  AuthenticatedLiveRecordsIndexRouteImport.update({
+    id: '/live-records/',
+    path: '/live-records/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHelpCenterIndexRoute =
   AuthenticatedHelpCenterIndexRouteImport.update({
     id: '/help-center/',
@@ -169,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/chats/': typeof AuthenticatedChatsIndexRoute
   '/gates/': typeof AuthenticatedGatesIndexRoute
   '/help-center/': typeof AuthenticatedHelpCenterIndexRoute
+  '/live-records/': typeof AuthenticatedLiveRecordsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/telegram-ids/': typeof AuthenticatedTelegramIdsIndexRoute
@@ -191,6 +199,7 @@ export interface FileRoutesByTo {
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/gates': typeof AuthenticatedGatesIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
+  '/live-records': typeof AuthenticatedLiveRecordsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/telegram-ids': typeof AuthenticatedTelegramIdsIndexRoute
@@ -216,6 +225,7 @@ export interface FileRoutesById {
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
   '/_authenticated/gates/': typeof AuthenticatedGatesIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
+  '/_authenticated/live-records/': typeof AuthenticatedLiveRecordsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/telegram-ids/': typeof AuthenticatedTelegramIdsIndexRoute
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/chats/'
     | '/gates/'
     | '/help-center/'
+    | '/live-records/'
     | '/settings/'
     | '/tasks/'
     | '/telegram-ids/'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/chats'
     | '/gates'
     | '/help-center'
+    | '/live-records'
     | '/settings'
     | '/tasks'
     | '/telegram-ids'
@@ -287,6 +299,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chats/'
     | '/_authenticated/gates/'
     | '/_authenticated/help-center/'
+    | '/_authenticated/live-records/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/telegram-ids/'
@@ -396,6 +409,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/live-records/': {
+      id: '/_authenticated/live-records/'
+      path: '/live-records'
+      fullPath: '/live-records/'
+      preLoaderRoute: typeof AuthenticatedLiveRecordsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/help-center/': {
       id: '/_authenticated/help-center/'
       path: '/help-center'
@@ -493,6 +513,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedGatesIndexRoute: typeof AuthenticatedGatesIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
+  AuthenticatedLiveRecordsIndexRoute: typeof AuthenticatedLiveRecordsIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedTelegramIdsIndexRoute: typeof AuthenticatedTelegramIdsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
@@ -506,6 +527,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedGatesIndexRoute: AuthenticatedGatesIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
+  AuthenticatedLiveRecordsIndexRoute: AuthenticatedLiveRecordsIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedTelegramIdsIndexRoute: AuthenticatedTelegramIdsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,

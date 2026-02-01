@@ -23,6 +23,7 @@ import {
   GalleryVerticalEnd,
   MessageSquare,
   Zap,
+  Activity,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -88,6 +89,11 @@ export const sidebarData: SidebarData = {
           title: 'Gates',
           url: '/gates',
           icon: Zap,
+        },
+        {
+          title: 'Live Records',
+          url: '/live-records',
+          icon: Activity,
         },
       ],
     },
