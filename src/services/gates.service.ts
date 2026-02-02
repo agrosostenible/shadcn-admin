@@ -15,6 +15,8 @@ export interface Gate {
   valor: number
   valor_con_descuento: number
   descuento_activo: boolean
+  estado: boolean
+  ruta: string | null
   roles?: Role[]
 }
 
@@ -24,6 +26,8 @@ export interface CreateGateData {
   valor: number
   valor_con_descuento: number
   descuento_activo?: boolean
+  estado?: boolean
+  ruta?: string
   role_ids?: string[]
 }
 
@@ -33,6 +37,8 @@ export interface UpdateGateData {
   valor?: number
   valor_con_descuento?: number
   descuento_activo?: boolean
+  estado?: boolean
+  ruta?: string
   role_ids?: string[]
 }
 
