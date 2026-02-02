@@ -34,6 +34,8 @@ const gateFormSchema = z.object({
   valor: z.number().min(0, 'Price must be positive'),
   valor_con_descuento: z.number().min(0, 'Discount price must be positive'),
   descuento_activo: z.boolean(),
+  estado: z.boolean(),
+  ruta: z.string().optional(),
   role_ids: z.array(z.string()).optional(),
 })
 
@@ -62,6 +64,8 @@ export function GatesActionDialog({
       valor: 0,
       valor_con_descuento: 0,
       descuento_activo: false,
+      estado: true,
+      ruta: '',
       role_ids: [],
     },
   })
@@ -74,6 +78,8 @@ export function GatesActionDialog({
         valor: currentRow.valor,
         valor_con_descuento: currentRow.valor_con_descuento,
         descuento_activo: currentRow.descuento_activo,
+        estado: currentRow.estado,
+        ruta: currentRow.ruta || '',
         role_ids: currentRow.roles?.map((r) => r.id) || [],
       })
     } else {
@@ -83,6 +89,8 @@ export function GatesActionDialog({
         valor: 0,
         valor_con_descuento: 0,
         descuento_activo: false,
+        estado: true,
+        ruta: '',
         role_ids: [],
       })
     }
@@ -205,6 +213,49 @@ export function GatesActionDialog({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='estado'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                  <div className='space-y-0.5'>
+                    <FormLabel className='text-base'>
+                      Status
+                    </FormLabel>
+                    <FormDescription>
+                      Enable or disable this gate
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='ruta'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Route</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='/path/to/gate'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    The route or path for this gate (e.g., /gate1, /gate2)
+                  </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />

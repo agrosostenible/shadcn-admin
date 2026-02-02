@@ -119,6 +119,28 @@ export const gatesColumns: ColumnDef<Gate>[] = [
     ),
   },
   {
+    accessorKey: 'estado',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Status' />
+    ),
+    cell: ({ row }) => (
+      <Badge variant={row.getValue('estado') ? 'default' : 'destructive'}>
+        {row.getValue('estado') ? 'Active' : 'Inactive'}
+      </Badge>
+    ),
+  },
+  {
+    accessorKey: 'ruta',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Route' />
+    ),
+    cell: ({ row }) => (
+      <div className='font-mono text-sm'>
+        {row.getValue('ruta') || '-'}
+      </div>
+    ),
+  },
+  {
     accessorKey: 'id',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='UUID' />

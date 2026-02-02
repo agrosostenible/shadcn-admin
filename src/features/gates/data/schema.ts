@@ -12,6 +12,8 @@ const gateSchema = z.object({
   valor: z.number(),
   valor_con_descuento: z.number(),
   descuento_activo: z.boolean(),
+  estado: z.boolean(),
+  ruta: z.string().nullable(),
   roles: z.array(roleSchema).optional(),
 })
 

@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DataTablePagination } from '@/components/data-table'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type TelegramID } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { telegramIDsColumns as columns } from './telegram-ids-columns'
@@ -91,7 +91,6 @@ export function TelegramIDsTable({ data, search, navigate }: DataTableProps) {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      
       <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>
