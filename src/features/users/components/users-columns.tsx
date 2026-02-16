@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
+import { ConnectionStatusBadge } from '@/components/connection-status-badge'
 import { roles } from '../data/data'
 import { type User } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
@@ -80,6 +81,19 @@ export const usersColumns: ColumnDef<User>[] = [
     cell: ({ row }) => (
       <div className='font-mono text-sm'>{row.getValue('telegram_id')}</div>
     ),
+    enableSorting: false,
+  },
+  {
+    id: 'connection_status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Estado' />
+    ),
+    cell: ({ row }) => {
+      // El estado de conexión se inyectará desde el contexto
+      const isConnected = (row.original as any).isConnected || false
+
+      return <ConnectionStatusBadge isConnected={isConnected} />
+    },
     enableSorting: false,
   },
   {
